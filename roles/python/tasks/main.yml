@@ -1,0 +1,20 @@
+---
+- name: be sure python is installed
+  yum:
+    name: python
+    state: present
+- name: be sure python-virtualenv is installed
+  yum:
+    name: python-virtualenv
+    state: present
+- name: be sure pip is installed (amazon linux)
+  yum:
+    name: python27-pip
+    state: present
+  register: pip_install_result
+  ignore_errors: True
+- name: be sure pip is installed (centos)
+  yum:
+    name: python2-pip
+    state: present
+  when: pip_install_result|failed

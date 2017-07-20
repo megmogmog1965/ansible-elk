@@ -1,0 +1,59 @@
+#!/bin/sh
+#
+# chkconfig:   2345 95 05
+# description: start ELK containers.
+
+workspace="/usr/local/elk"
+cmdpath="/usr/local/bin/docker-compose"
+prog="elk"
+lockfile="/var/lock/elk"
+pidfile="/var/run/elk.pid"
+
+PATH="$PATH:/usr/local/bin"
+
+
+start() {
+    # clean up.
+    stop
+
+    [ -x $cmdpath ] || exit 5
+    echo -n $"Starting $prog: "
+    cd $workspace
+    $cmdpath up -d
+    retval=$?
+    pid=$!
+    echo
+    [ $retval -eq 0 ] && touch $lockfile && echo $pid > $pidfile
+    return $retval
+}
+
+stop() {
+    echo -n $"Stopping $prog: "
+    cd $workspace
+    $cmdpath down
+    retval=$?
+    echo
+    [ $retval -eq 0 ] && rm -f $lockfile && rm -f $pidfile
+    return $retval
+}
+
+restart() {
+    stop
+    sleep 3
+    start
+}
+
+case "$1" in
+    start)
+        $1
+        ;;
+    stop)
+        $1
+        ;;
+    restart)
+        $1
+        ;;
+    *)
+        echo $"Usage: $0 {start|stop|restart}"
+        exit 2
+esac

@@ -1,0 +1,26 @@
+---
+- file:
+    path: /usr/local/elk
+    state: directory
+    mode: 0755
+- name: copy nginx.conf
+  copy:
+    src: nginx.conf
+    dest: /usr/local/elk/nginx.conf
+    mode: 0644
+- name: template docker-compose.yml
+  template:
+    src: docker-compose.yml.j2
+    dest: /usr/local/elk/docker-compose.yml
+    mode: 0644
+- name: be sure ELK is running and enabled
+  service:
+    name: elk
+    state: started
+    enabled: yes
+- name: be sure logstash is installed
+  yum:
+    name: https://artifacts.elastic.co/downloads/logstash/logstash-5.5.0.rpm
+    state: present
+- name: add logstash bin path
+  shell: echo 'export PATH=$PATH:/usr/share/logstash/bin/' > ~/.bash_profile
