@@ -1,7 +1,13 @@
 ---
-- file:
+- name: be sure /usr/local/elk directory exists
+  file:
     path: /usr/local/elk
     state: directory
+    mode: 0755
+- name: copy init.d script
+  copy:
+    src: elk
+    dest: /etc/init.d/elk
     mode: 0755
 - name: copy nginx.conf
   copy:
@@ -22,5 +28,8 @@
   yum:
     name: https://artifacts.elastic.co/downloads/logstash/logstash-5.5.0.rpm
     state: present
-- name: add logstash bin path
-  shell: echo 'export PATH=$PATH:/usr/share/logstash/bin/' > ~/.bash_profile
+- name: add symlink
+  file:
+    src: /usr/share/logstash/bin/logstash
+    dest: /usr/bin/logstash
+    state: link
