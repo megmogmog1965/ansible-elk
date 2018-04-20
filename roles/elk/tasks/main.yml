@@ -28,6 +28,11 @@
   yum:
     name: https://artifacts.elastic.co/downloads/logstash/logstash-5.5.0.rpm
     state: present
+- name: be sure logstash data directory can be writable
+  file:
+    path: /usr/share/logstash/data
+    state: directory
+    mode: 0777
 - name: add symlink
   file:
     src: /usr/share/logstash/bin/logstash
